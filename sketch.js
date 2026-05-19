@@ -26,30 +26,33 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // Tower configuration
+  // UPDATED DIMENSIONS: Bigger blocks for better text fit
   let towerLayers = 10;
   let blocksPerLayer = 3;
-  let bWidth = 55;
-  let bHeight = 170;
-  let gap = 3;
+  let bWidth = 80; // Was 55
+  let bHeight = 250; // Was 170
+  let bThickness = 45; // Was 30
+  let gap = 5;
 
-  // Positioning the tower within the "white" workspace of your screenshot
+  // Positioning logic
   let centerX = width * 0.38;
-  let centerY = height * 0.75;
+  let centerY = height * 0.85; // Lowered slightly to accommodate taller tower
 
-  // Initialize the block data
   for (let i = 0; i < towerLayers; i++) {
-    let layerY = centerY - i * 33;
+    // Increased the Y-offset (48) so layers don't overlap
+    let layerY = centerY - i * (bThickness + 3);
 
     if (i % 2 === 0) {
+      // Horizontal/Side view
       blocks.push({
         x: centerX - bHeight / 2,
         y: layerY,
         w: bHeight,
-        h: 30,
+        h: bThickness,
         message: random(messages),
       });
     } else {
+      // Vertical/Front view
       let totalWidth = blocksPerLayer * bWidth + (blocksPerLayer - 1) * gap;
       let startX = centerX - totalWidth / 2;
       for (let j = 0; j < blocksPerLayer; j++) {
@@ -57,7 +60,7 @@ function setup() {
           x: startX + j * (bWidth + gap),
           y: layerY,
           w: bWidth,
-          h: 30,
+          h: bThickness,
           message: random(messages),
         });
       }
@@ -66,14 +69,12 @@ function setup() {
 }
 
 function draw() {
-  // REQUIREMENT: Sketch must include a background command
-  // This clears the canvas every frame to prevent "ghosting"
+  // REQUIREMENT: Background command
   background(30);
 
-  // REQUIREMENT: Include an image (Drawing the Lightroom UI)
+  // REQUIREMENT: Image element (Background UI)
   image(bgImg, 0, 0, width, height);
 
-  // Draw each block in the tower
   for (let b of blocks) {
     drawBlock(b);
   }
@@ -81,36 +82,34 @@ function draw() {
 
 function drawBlock(b) {
   push();
-
-  // Clipping the wood texture to the block shape
   drawingContext.save();
 
-  // REQUIREMENT: Include at least one shape (the rect creates the block)
+  // REQUIREMENT: Shape element (The rectangle)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 2);
+  rect(b.x, b.y, b.w, b.h, 4); // Slightly more rounded corners for the bigger scale
   drawingContext.clip();
 
-  // Apply the texture image
+  // REQUIREMENT: Image element (The texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Draw an outline for the block shape
-  stroke(150, 80, 90, 150);
+  // Definition Outline
+  stroke(150, 80, 90, 180);
+  strokeWeight(1.5);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 2);
+  rect(b.x, b.y, b.w, b.h, 4);
 
-  // REQUIREMENT: Include at least one text element
+  // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(11);
+  textSize(16); // Increased font size
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
-  // Interactive click to change the text message
   for (let b of blocks) {
     if (
       mouseX > b.x &&

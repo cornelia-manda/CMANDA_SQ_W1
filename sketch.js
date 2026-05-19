@@ -26,30 +26,27 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // TOWER DIMENSIONS: Scaled down for a "Mini" desktop feel
+  // 1. DYNAMIC RE-CENTERING
+  // Instead of static numbers, we use percentages to ensure it stays in the white box
   let towerLayers = 10;
   let blocksPerLayer = 3;
 
-  // REDUCED: Significant decrease to keep the tower inside the white canvas
-  let bWidth = 65;
-  let bThickness = 26;
+  // EXTREMELY SMALL: If this doesn't look smaller, the browser isn't updating!
+  let bWidth = 45;
+  let bThickness = 22;
   let gap = 2;
 
-  // Total width of the 3-block layer
+  // Math for the long side-blocks
   let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
 
-  // POSITIONING: Moving the tower "High and Center"
-  // 0.385 centers it within the white editing area
+  // POSITION: Much higher up (0.05) and centered in the workspace (0.38)
   let centerX = width * 0.385;
-  // 0.08 starts the tower right at the top of the white box
   let centerY = height * 0.08;
 
   for (let i = 0; i < towerLayers; i++) {
-    // Build the stack from top to bottom
     let layerY = centerY + i * (bThickness + 2);
 
     if (i % 2 === 0) {
-      // Horizontal/Side view (One long block)
       blocks.push({
         x: centerX - bHeight / 2,
         y: layerY,
@@ -58,7 +55,6 @@ function setup() {
         message: random(messages),
       });
     } else {
-      // Vertical/Front view (Three individual blocks)
       let startX = centerX - bHeight / 2;
       for (let j = 0; j < blocksPerLayer; j++) {
         blocks.push({
@@ -75,9 +71,10 @@ function setup() {
 
 function draw() {
   // REQUIREMENT: Background command
-  background(30);
+  background(20);
 
-  // REQUIREMENT: Image element (Lightroom Background)
+  // REQUIREMENT: Image element
+  // Ensuring the background fills the window
   image(bgImg, 0, 0, width, height);
 
   for (let b of blocks) {
@@ -89,34 +86,32 @@ function drawBlock(b) {
   push();
   drawingContext.save();
 
-  // REQUIREMENT: Shape element (The rect defining the block)
+  // REQUIREMENT: Shape element (The rect)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 3);
+  rect(b.x, b.y, b.w, b.h, 2);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (The wood texture)
+  // REQUIREMENT: Image element (Wood Texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Block Outline
-  stroke(100, 40, 50, 150);
-  strokeWeight(1);
+  // Thin outline for a "clean" edit look
+  stroke(100, 40, 50, 180);
+  strokeWeight(0.5);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 3);
+  rect(b.x, b.y, b.w, b.h, 2);
 
   // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  // Smaller font for the mini blocks
-  textSize(10);
+  textSize(9); // Small font to match the tiny blocks
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
-  // Interaction check
   for (let b of blocks) {
     if (
       mouseX > b.x &&

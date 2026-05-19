@@ -25,7 +25,7 @@ let messages = [
 
 function preload() {
   // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026)
-  bgImg = loadImage("assets/images/lightroom-workplace.jpg");
+  bgImg = loadImage("assets/images/lightroom-workplace.png");
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 

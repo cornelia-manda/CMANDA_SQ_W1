@@ -1,6 +1,6 @@
 let bgImg;
 let woodImg;
-let blocks = []; // We need an array to keep track of each block for clicking
+let blocks = [];
 
 let messages = [
   "BREATHE",
@@ -18,6 +18,7 @@ let messages = [
 ];
 
 function preload() {
+  // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026).
   bgImg = loadImage("assets/images/lightroom-workplace.png");
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
@@ -25,23 +26,22 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // Initialize Tower
+  // Tower configuration
   let towerLayers = 10;
   let blocksPerLayer = 3;
   let bWidth = 55;
   let bHeight = 170;
   let gap = 3;
 
-  // Calculate the "Visual Center" of the white workspace in your screenshot
-  // We shift it left (-width * 0.12) so it isn't in the middle of the toolbars
+  // Positioning the tower within the "white" workspace of your screenshot
   let centerX = width * 0.38;
   let centerY = height * 0.75;
 
+  // Initialize the block data
   for (let i = 0; i < towerLayers; i++) {
     let layerY = centerY - i * 33;
 
     if (i % 2 === 0) {
-      // Side-view block (Horizontal)
       blocks.push({
         x: centerX - bHeight / 2,
         y: layerY,
@@ -50,7 +50,6 @@ function setup() {
         message: random(messages),
       });
     } else {
-      // Front-view blocks (Vertical)
       let totalWidth = blocksPerLayer * bWidth + (blocksPerLayer - 1) * gap;
       let startX = centerX - totalWidth / 2;
       for (let j = 0; j < blocksPerLayer; j++) {
@@ -67,10 +66,14 @@ function setup() {
 }
 
 function draw() {
-  // 1. Draw the Background to fit the screen perfectly
+  // REQUIREMENT: Sketch must include a background command
+  // This clears the canvas every frame to prevent "ghosting"
+  background(30);
+
+  // REQUIREMENT: Include an image (Drawing the Lightroom UI)
   image(bgImg, 0, 0, width, height);
 
-  // 2. Draw all blocks from the array
+  // Draw each block in the tower
   for (let b of blocks) {
     drawBlock(b);
   }
@@ -78,20 +81,25 @@ function draw() {
 
 function drawBlock(b) {
   push();
-  // Texture clipping
+
+  // Clipping the wood texture to the block shape
   drawingContext.save();
+
+  // REQUIREMENT: Include at least one shape (the rect creates the block)
   noFill();
   rect(b.x, b.y, b.w, b.h, 2);
   drawingContext.clip();
+
+  // Apply the texture image
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Definition Outline
-  stroke(150, 80, 90, 120);
+  // Draw an outline for the block shape
+  stroke(150, 80, 90, 150);
   noFill();
   rect(b.x, b.y, b.w, b.h, 2);
 
-  // Text Styling
+  // REQUIREMENT: Include at least one text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
@@ -101,10 +109,9 @@ function drawBlock(b) {
   pop();
 }
 
-// 3. Interaction Logic
 function mousePressed() {
+  // Interactive click to change the text message
   for (let b of blocks) {
-    // Check if mouse is within block boundaries
     if (
       mouseX > b.x &&
       mouseX < b.x + b.w &&
@@ -112,7 +119,6 @@ function mousePressed() {
       mouseY < b.y + b.h
     ) {
       let newMsg = random(messages);
-      // Don't repeat the same message
       while (newMsg === b.message) {
         newMsg = random(messages);
       }

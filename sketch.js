@@ -1,10 +1,12 @@
 let bgImg;
 let woodImg;
-let towerLayers = 10; // Added a few more layers for a taller composition
+
+// Tower dimensions
+let towerLayers = 10;
 let blocksPerLayer = 3;
-let blockWidth = 150;
-let blockHeight = 30;
-let blockDepth = 50;
+let blockWidth = 60;
+let blockHeight = 180; // In 2D, these are "vertical" or "horizontal" rectangles
+let gap = 4;
 
 let messages = [
   "BREATHE",
@@ -21,86 +23,104 @@ let messages = [
   "STRENGTH",
 ];
 
-let blockTextures = [];
-
 function preload() {
-  // Update these to the exact folder path
+  // Updated paths as requested
   bgImg = loadImage("assets/images/lightroom-workplace.jpg");
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-
-  // Generate static textures
-  for (let i = 0; i < messages.length; i++) {
-    let pg = createGraphics(300, 100);
-    pg.image(woodImg, 0, 0, 300, 100);
-    pg.fill(255);
-    pg.textAlign(CENTER, CENTER);
-    pg.textSize(28); // Slightly larger for better readability
-    pg.textFont("Georgia");
-    pg.text(messages[i], pg.width / 2, pg.height / 2);
-    blockTextures.push(pg);
-  }
-
-  // We only need to draw this once since it's static
-  noLoop();
+  // Standard 2D canvas (no WEBGL)
+  createCanvas(windowWidth, windowHeight);
+  noLoop(); // Keep it static
 }
 
 function draw() {
-  // 1. Background clear
-  background(25);
+  // 1. Draw the Lightroom Background
+  // This scales the image to cover your screen
+  let imgAspect = bgImg.width / bgImg.height;
+  let canvasAspect = width / height;
+  let drawW, drawH;
 
-  // 2. Draw static Lightroom Background
+  if (canvasAspect > imgAspect) {
+    drawW = width;
+    drawH = width / imgAspect;
+  } else {
+    drawH = height;
+    drawW = height * imgAspect;
+  }
+  image(bgImg, (width - drawW) / 2, (height - drawH) / 2, drawW, drawH);
+
+  // 2. Draw the Jenga Tower in the center
   push();
-  resetMatrix();
-  translate(0, 0, -600);
-  imageMode(CENTER);
-  let scale = max(width / bgImg.width, height / bgImg.height);
-  image(bgImg, 0, 0, bgImg.width * scale, bgImg.height * scale);
-  pop();
+  translate(width / 2, height / 2 + towerLayers * 15); // Center the tower
 
-  // 3. Lighting (Fixed "Studio" Setup)
-  ambientLight(120);
-  pointLight(255, 255, 255, 400, -500, 400); // Key light from the top-right
-  pointLight(150, 150, 200, -400, 200, 200); // Subtle blue fill light
+  for (let i = 0; i < towerLayers; i++) {
+    let layerY = -i * 35; // Stack them upwards
 
-  // 4. Fixed Perspective
-  rotateX(-0.4); // Tilt down to see the top of the blocks
-  rotateY(0.5); // Fixed angle to show the dimension of the tower
-
-  for (let y = 0; y < towerLayers; y++) {
-    push();
-    translate(0, (towerLayers / 2 - y) * blockHeight, 0);
-
-    if (y % 2 === 0) {
-      drawLayer(y);
+    // Check if layer is horizontal or vertical style
+    if (i % 2 === 0) {
+      drawHorizontalLayer(layerY, i);
     } else {
-      rotateY(HALF_PI);
-      drawLayer(y);
+      drawVerticalLayer(layerY, i);
     }
-    pop();
+  }
+  pop();
+}
+
+function drawHorizontalLayer(y, layerIndex) {
+  let totalWidth = blockHeight;
+  let startX = -totalWidth / 2;
+
+  // Draw one large block to represent the "side" view of the 3 blocks
+  drawBlock(startX, y, blockHeight, 30, messages[layerIndex % messages.length]);
+}
+
+function drawVerticalLayer(y, layerIndex) {
+  let totalWidth = blocksPerLayer * blockWidth + (blocksPerLayer - 1) * gap;
+  let startX = -totalWidth / 2;
+
+  for (let j = 0; j < blocksPerLayer; j++) {
+    let x = startX + j * (blockWidth + gap);
+    // Draw 3 individual "front" blocks
+    drawBlock(
+      x,
+      y,
+      blockWidth,
+      30,
+      messages[(layerIndex + j) % messages.length],
+    );
   }
 }
 
-function drawLayer(layerIndex) {
-  for (let i = 0; i < blocksPerLayer; i++) {
-    push();
-    let xOffset = (i - 1) * (blockDepth + 3); // 3px gap for realism
-    translate(xOffset, 0, 0);
+function drawBlock(x, y, w, h, msg) {
+  push();
+  // Clip the pink wood texture to the block shape
+  drawingContext.save();
+  noFill();
+  rect(x, y, w, h, 2); // Rounded corners for a "sanded" look
+  drawingContext.clip();
 
-    // Pick a message based on the block's position so it stays consistent
-    let texIndex = (layerIndex + i) % blockTextures.length;
-    texture(blockTextures[texIndex]);
+  // Draw the wood texture inside the clipped region
+  image(woodImg, x, y, w, h);
+  drawingContext.restore();
 
-    noStroke();
-    box(blockDepth, blockHeight, blockWidth);
-    pop();
-  }
+  // Block Outline for definition
+  stroke(200, 100, 120, 100);
+  noFill();
+  rect(x, y, w, h, 2);
+
+  // Encouraging Text
+  fill(255);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textSize(10);
+  textFont("Georgia");
+  text(msg, x + w / 2, y + h / 2);
+  pop();
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  redraw(); // Re-render once when the window changes
+  redraw();
 }

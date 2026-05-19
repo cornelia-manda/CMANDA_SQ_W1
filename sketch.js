@@ -26,27 +26,27 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // TOWER DIMENSIONS: Stretched horizontally for maximum text clearance
+  // TOWER DIMENSIONS: Reduced width for a better fit in the white area
   let towerLayers = 10;
   let blocksPerLayer = 3;
 
-  // INCREASED: Blocks are now nearly 200px wide for a very "wide-screen" look
-  let bWidth = 195;
-  let bThickness = 50;
-  let gap = 8;
+  // REDUCED: Narrower blocks to fit inside the "editing" canvas
+  let bWidth = 120;
+  let bThickness = 45;
+  let gap = 5;
 
-  // Side block length automatically matches the 3-block layer width
+  // Side block height matches the total width of the 3-block layer
   let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
 
-  // POSITIONING: Moving the tower "Up" and "Right" (towards the middle)
-  // width * 0.41 moves it away from the left edge towards the center of the white area
-  let centerX = width * 0.41;
-  // height * 0.40 moves it significantly higher up the screen
-  let centerY = height * 0.4;
+  // POSITIONING: Moving the tower "Up" and further "Middle-Right"
+  // 0.39 centers it horizontally within the white workspace
+  let centerX = width * 0.39;
+  // 0.15 starts the stack near the top of the white area
+  let centerY = height * 0.15;
 
   for (let i = 0; i < towerLayers; i++) {
-    // Spacing (55) adjusted for thicker blocks
-    let layerY = centerY + i * (bThickness + 5);
+    // We build the layers downward from the top-set centerY
+    let layerY = centerY + i * (bThickness + 3);
 
     if (i % 2 === 0) {
       // Horizontal/Side view (One long block)
@@ -77,7 +77,7 @@ function draw() {
   // REQUIREMENT: Background command
   background(30);
 
-  // REQUIREMENT: Image element (Lightroom UI)
+  // REQUIREMENT: Image element (Background Lightroom UI)
   image(bgImg, 0, 0, width, height);
 
   for (let b of blocks) {
@@ -91,31 +91,32 @@ function drawBlock(b) {
 
   // REQUIREMENT: Shape element (The rect defining the block)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 6);
+  rect(b.x, b.y, b.w, b.h, 5);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (Wood texture)
+  // REQUIREMENT: Image element (Applied wood texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Definition Outline
-  stroke(100, 40, 50, 200);
-  strokeWeight(1.5);
+  // Visual Polish: Outline
+  stroke(110, 50, 60, 200);
+  strokeWeight(1.2);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 6);
+  rect(b.x, b.y, b.w, b.h, 5);
 
   // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  // Slightly larger font for the now massive blocks
-  textSize(18);
+  // Adjusted text size to ensure "MOMENTUM" and "STRENGTH" fit narrow blocks
+  textSize(13);
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
+  // Click interaction to change words
   for (let b of blocks) {
     if (
       mouseX > b.x &&

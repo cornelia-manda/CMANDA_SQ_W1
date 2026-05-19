@@ -26,22 +26,18 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // 1. DYNAMIC RE-CENTERING
-  // Instead of static numbers, we use percentages to ensure it stays in the white box
+  // Tower Dimensions
   let towerLayers = 10;
   let blocksPerLayer = 3;
-
-  // EXTREMELY SMALL: If this doesn't look smaller, the browser isn't updating!
-  let bWidth = 45;
-  let bThickness = 22;
+  let bWidth = 65;
+  let bThickness = 26;
   let gap = 2;
 
-  // Math for the long side-blocks
   let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
 
-  // POSITION: Much higher up (0.05) and centered in the workspace (0.38)
+  // POSITIONING: Centered in the white area
   let centerX = width * 0.385;
-  let centerY = height * 0.08;
+  let centerY = height * 0.22;
 
   for (let i = 0; i < towerLayers; i++) {
     let layerY = centerY + i * (bThickness + 2);
@@ -71,41 +67,81 @@ function setup() {
 
 function draw() {
   // REQUIREMENT: Background command
-  background(20);
+  background(30);
 
-  // REQUIREMENT: Image element
-  // Ensuring the background fills the window
+  // REQUIREMENT: Image element (Background UI)
   image(bgImg, 0, 0, width, height);
 
+  // Draw the table (Gray, no outline, precise legs)
+  drawTable();
+
+  // Draw blocks
   for (let b of blocks) {
     drawBlock(b);
   }
+}
+
+function drawTable() {
+  let bWidth = 65;
+  let blocksPerLayer = 3;
+  let gap = 2;
+  let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
+
+  let centerX = width * 0.385;
+  // Dynamic calculation for the very bottom of the tower
+  let towerBottom = height * 0.22 + 10 * 28;
+
+  push();
+  // 1. Surface Dimensions
+  let tableW = bHeight * 1.5;
+  let tableH = 10;
+  let tableX = centerX - tableW / 2;
+  let tableY = towerBottom;
+
+  // 2. Leg Dimensions & Precision Limit
+  let whiteLimit = height * 0.875;
+  let legW = 8;
+  let legH = whiteLimit - (tableY + tableH);
+
+  // Table Styling: Light gray, NO outline
+  fill(220);
+  noStroke();
+
+  // Draw Surface
+  rect(tableX, tableY, tableW, tableH, 2);
+
+  // Draw Legs (Only if height is positive)
+  if (legH > 0) {
+    rect(tableX + 15, tableY + tableH, legW, legH);
+    rect(tableX + tableW - 15 - legW, tableY + tableH, legW, legH);
+  }
+  pop();
 }
 
 function drawBlock(b) {
   push();
   drawingContext.save();
 
-  // REQUIREMENT: Shape element (The rect)
+  // REQUIREMENT: Shape element (The rect defining the block)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 2);
+  rect(b.x, b.y, b.w, b.h, 3);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (Wood Texture)
+  // REQUIREMENT: Image element (Applied wood texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Thin outline for a "clean" edit look
-  stroke(100, 40, 50, 180);
-  strokeWeight(0.5);
+  // Block Outline for "Shutter" definition
+  stroke(100, 40, 50, 150);
+  strokeWeight(1);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 2);
+  rect(b.x, b.y, b.w, b.h, 3);
 
   // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(9); // Small font to match the tiny blocks
+  textSize(10);
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();

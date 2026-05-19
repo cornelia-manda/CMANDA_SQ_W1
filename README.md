@@ -1,22 +1,15 @@
 # CMANDA_SQ_W1
 
 Project Title:
+Motivational Jenga in a Lightroom Workspace
 
-- Provide a clear and descriptive name for your sketch.
+Setup and Interaction Instructions:
+First, load the sketch on Google Chrome! Then to interact with the scene, click a Jenga block for a new motivational :)
 
-Setup and Interaction Instructions
--Explain how to run the file.
+## Assets:
 
--Provide specific instructions on how to "play" or interact with your static scene.
-
-Assets:
--Create a list of all assets used in the project that you did not create yourself.
-
--Provide proper attribution for each asset (e.g., links to the source or the creator's name).
+Pink Wood Texture [1]
+Lightroom Background [2] //sourced from myself as a screenshot
 
 References:
-Include references for any code snippets, tutorials, or logic you adapted from external sources.
-
-Mandatory Format: These must be in ACM format and connected to in-text or code citations.
-
-Refer to your class examples for the specific formatting required for the README file.
+[1] Lara. 2026. White and pink wood texture background.[JPEG image] Adobe Stock. Retrieved May 18, 2026 from https://stock.adobe.com/ca/search?k=pink+wood+texture&asset_id=727393029

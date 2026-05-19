@@ -24,13 +24,13 @@ let messages = [
 ];
 
 function preload() {
-  // Updated paths as requested
+  // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026)
   bgImg = loadImage("assets/images/lightroom-workplace.jpg");
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {
-  // Standard 2D canvas (no WEBGL)
+  // Standard 2D canvas
   createCanvas(windowWidth, windowHeight);
   noLoop(); // Keep it static
 }

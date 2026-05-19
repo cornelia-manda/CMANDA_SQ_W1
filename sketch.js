@@ -26,27 +26,27 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // TOWER DIMENSIONS: Significant horizontal increase for text fit
+  // TOWER DIMENSIONS: Stretched horizontally for maximum text clearance
   let towerLayers = 10;
   let blocksPerLayer = 3;
 
-  // INCREASED: Each small block is now 160px wide to fit "MOMENTUM" perfectly
-  let bWidth = 160;
-  let bThickness = 48;
-  let gap = 6;
+  // INCREASED: Blocks are now nearly 200px wide for a very "wide-screen" look
+  let bWidth = 195;
+  let bThickness = 50;
+  let gap = 8;
 
-  // Calculated width for the long horizontal blocks to match the three small blocks
+  // Side block length automatically matches the 3-block layer width
   let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
 
-  // POSITIONING: Moving the tower "Up" and further "Left" to hit the white center
-  // 0.34 shifts it left into the white workspace area
-  let centerX = width * 0.34;
-  // 0.50 pulls the tower significantly up towards the top of the canvas
-  let centerY = height * 0.5;
+  // POSITIONING: Moving the tower "Up" and "Right" (towards the middle)
+  // width * 0.41 moves it away from the left edge towards the center of the white area
+  let centerX = width * 0.41;
+  // height * 0.40 moves it significantly higher up the screen
+  let centerY = height * 0.4;
 
   for (let i = 0; i < towerLayers; i++) {
-    // Increased the spacing (52) so the larger blocks don't overlap
-    let layerY = centerY - i * (bThickness + 4);
+    // Spacing (55) adjusted for thicker blocks
+    let layerY = centerY + i * (bThickness + 5);
 
     if (i % 2 === 0) {
       // Horizontal/Side view (One long block)
@@ -77,7 +77,7 @@ function draw() {
   // REQUIREMENT: Background command
   background(30);
 
-  // REQUIREMENT: Image element (Background Lightroom UI)
+  // REQUIREMENT: Image element (Lightroom UI)
   image(bgImg, 0, 0, width, height);
 
   for (let b of blocks) {
@@ -94,12 +94,12 @@ function drawBlock(b) {
   rect(b.x, b.y, b.w, b.h, 6);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (Applied wood texture)
+  // REQUIREMENT: Image element (Wood texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Visual Polish: Outline
-  stroke(100, 40, 50, 220);
+  // Definition Outline
+  stroke(100, 40, 50, 200);
   strokeWeight(1.5);
   noFill();
   rect(b.x, b.y, b.w, b.h, 6);
@@ -108,14 +108,14 @@ function drawBlock(b) {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(16); // Larger text for the larger blocks
+  // Slightly larger font for the now massive blocks
+  textSize(18);
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
-  // Click interaction to change words
   for (let b of blocks) {
     if (
       mouseX > b.x &&

@@ -1,12 +1,6 @@
 let bgImg;
 let woodImg;
-
-// Tower dimensions
-let towerLayers = 10;
-let blocksPerLayer = 3;
-let blockWidth = 60;
-let blockHeight = 180; // In 2D, these are "vertical" or "horizontal" rectangles
-let gap = 4;
+let blocks = []; // We need an array to keep track of each block for clicking
 
 let messages = [
   "BREATHE",
@@ -24,103 +18,109 @@ let messages = [
 ];
 
 function preload() {
-  // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026)
   bgImg = loadImage("assets/images/lightroom-workplace.png");
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {
-  // Standard 2D canvas
   createCanvas(windowWidth, windowHeight);
-  noLoop(); // Keep it static
+
+  // Initialize Tower
+  let towerLayers = 10;
+  let blocksPerLayer = 3;
+  let bWidth = 55;
+  let bHeight = 170;
+  let gap = 3;
+
+  // Calculate the "Visual Center" of the white workspace in your screenshot
+  // We shift it left (-width * 0.12) so it isn't in the middle of the toolbars
+  let centerX = width * 0.38;
+  let centerY = height * 0.75;
+
+  for (let i = 0; i < towerLayers; i++) {
+    let layerY = centerY - i * 33;
+
+    if (i % 2 === 0) {
+      // Side-view block (Horizontal)
+      blocks.push({
+        x: centerX - bHeight / 2,
+        y: layerY,
+        w: bHeight,
+        h: 30,
+        message: random(messages),
+      });
+    } else {
+      // Front-view blocks (Vertical)
+      let totalWidth = blocksPerLayer * bWidth + (blocksPerLayer - 1) * gap;
+      let startX = centerX - totalWidth / 2;
+      for (let j = 0; j < blocksPerLayer; j++) {
+        blocks.push({
+          x: startX + j * (bWidth + gap),
+          y: layerY,
+          w: bWidth,
+          h: 30,
+          message: random(messages),
+        });
+      }
+    }
+  }
 }
 
 function draw() {
-  // 1. Draw the Lightroom Background
-  // This scales the image to cover your screen
-  let imgAspect = bgImg.width / bgImg.height;
-  let canvasAspect = width / height;
-  let drawW, drawH;
+  // 1. Draw the Background to fit the screen perfectly
+  image(bgImg, 0, 0, width, height);
 
-  if (canvasAspect > imgAspect) {
-    drawW = width;
-    drawH = width / imgAspect;
-  } else {
-    drawH = height;
-    drawW = height * imgAspect;
+  // 2. Draw all blocks from the array
+  for (let b of blocks) {
+    drawBlock(b);
   }
-  image(bgImg, (width - drawW) / 2, (height - drawH) / 2, drawW, drawH);
+}
 
-  // 2. Draw the Jenga Tower in the center
+function drawBlock(b) {
   push();
-  translate(width / 2, height / 2 + towerLayers * 15); // Center the tower
-
-  for (let i = 0; i < towerLayers; i++) {
-    let layerY = -i * 35; // Stack them upwards
-
-    // Check if layer is horizontal or vertical style
-    if (i % 2 === 0) {
-      drawHorizontalLayer(layerY, i);
-    } else {
-      drawVerticalLayer(layerY, i);
-    }
-  }
-  pop();
-}
-
-function drawHorizontalLayer(y, layerIndex) {
-  let totalWidth = blockHeight;
-  let startX = -totalWidth / 2;
-
-  // Draw one large block to represent the "side" view of the 3 blocks
-  drawBlock(startX, y, blockHeight, 30, messages[layerIndex % messages.length]);
-}
-
-function drawVerticalLayer(y, layerIndex) {
-  let totalWidth = blocksPerLayer * blockWidth + (blocksPerLayer - 1) * gap;
-  let startX = -totalWidth / 2;
-
-  for (let j = 0; j < blocksPerLayer; j++) {
-    let x = startX + j * (blockWidth + gap);
-    // Draw 3 individual "front" blocks
-    drawBlock(
-      x,
-      y,
-      blockWidth,
-      30,
-      messages[(layerIndex + j) % messages.length],
-    );
-  }
-}
-
-function drawBlock(x, y, w, h, msg) {
-  push();
-  // Clip the pink wood texture to the block shape
+  // Texture clipping
   drawingContext.save();
   noFill();
-  rect(x, y, w, h, 2); // Rounded corners for a "sanded" look
+  rect(b.x, b.y, b.w, b.h, 2);
   drawingContext.clip();
-
-  // Draw the wood texture inside the clipped region
-  image(woodImg, x, y, w, h);
+  image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Block Outline for definition
-  stroke(200, 100, 120, 100);
+  // Definition Outline
+  stroke(150, 80, 90, 120);
   noFill();
-  rect(x, y, w, h, 2);
+  rect(b.x, b.y, b.w, b.h, 2);
 
-  // Encouraging Text
+  // Text Styling
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(10);
+  textSize(11);
   textFont("Georgia");
-  text(msg, x + w / 2, y + h / 2);
+  text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
+}
+
+// 3. Interaction Logic
+function mousePressed() {
+  for (let b of blocks) {
+    // Check if mouse is within block boundaries
+    if (
+      mouseX > b.x &&
+      mouseX < b.x + b.w &&
+      mouseY > b.y &&
+      mouseY < b.y + b.h
+    ) {
+      let newMsg = random(messages);
+      // Don't repeat the same message
+      while (newMsg === b.message) {
+        newMsg = random(messages);
+      }
+      b.message = newMsg;
+    }
+  }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  redraw();
 }

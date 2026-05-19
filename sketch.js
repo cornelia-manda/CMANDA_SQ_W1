@@ -24,8 +24,9 @@ let messages = [
 let blockTextures = [];
 
 function preload() {
-  bgImg = loadImage("lightroom-workplace.jpg");
-  woodImg = loadImage("pink-wood.jpg");
+  // Update these to the exact folder path
+  bgImg = loadImage("assets/images/lightroom-workplace.jpg");
+  woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {

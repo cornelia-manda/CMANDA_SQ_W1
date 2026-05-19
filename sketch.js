@@ -25,7 +25,7 @@ let shortMessages = [];
 function preload() {
   // Path for background UI screenshot
   bgImg = loadImage("assets/images/lightroom-workplace.png");
-  // Path for block wood texture
+  // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026).
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 

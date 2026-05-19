@@ -19,32 +19,34 @@ let messages = [
 
 function preload() {
   bgImg = loadImage("assets/images/lightroom-workplace.png");
+  // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026).
   woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // TOWER DIMENSIONS: Scaled up horizontally for text clearance
+  // TOWER DIMENSIONS: Significant horizontal increase for text fit
   let towerLayers = 10;
   let blocksPerLayer = 3;
 
-  // SIGNIFICANT INCREASE: These widths ensure "MOMENTUM" fits with padding
-  let bWidth = 125; // Width of individual front blocks
-  let bThickness = 45; // Height of the blocks
-  let gap = 5; // Gap between blocks
+  // INCREASED: Each small block is now 160px wide to fit "MOMENTUM" perfectly
+  let bWidth = 160;
+  let bThickness = 48;
+  let gap = 6;
 
-  // The side block height must match the total width of the 3-block layer
+  // Calculated width for the long horizontal blocks to match the three small blocks
   let bHeight = bWidth * blocksPerLayer + gap * (blocksPerLayer - 1);
 
-  // POSITIONING: Moving the tower "Up" and "Center-Left" in the white area
-  // 0.395 aligns it with the center of the white workspace in the screenshot
-  let centerX = width * 0.395;
-  // 0.65 pulls the bottom of the tower up significantly
-  let centerY = height * 0.65;
+  // POSITIONING: Moving the tower "Up" and further "Left" to hit the white center
+  // 0.34 shifts it left into the white workspace area
+  let centerX = width * 0.34;
+  // 0.50 pulls the tower significantly up towards the top of the canvas
+  let centerY = height * 0.5;
 
   for (let i = 0; i < towerLayers; i++) {
-    let layerY = centerY - i * (bThickness + 3);
+    // Increased the spacing (52) so the larger blocks don't overlap
+    let layerY = centerY - i * (bThickness + 4);
 
     if (i % 2 === 0) {
       // Horizontal/Side view (One long block)
@@ -73,9 +75,9 @@ function setup() {
 
 function draw() {
   // REQUIREMENT: Background command
-  background(35);
+  background(30);
 
-  // REQUIREMENT: Image element (The Background UI)
+  // REQUIREMENT: Image element (Background Lightroom UI)
   image(bgImg, 0, 0, width, height);
 
   for (let b of blocks) {
@@ -89,31 +91,31 @@ function drawBlock(b) {
 
   // REQUIREMENT: Shape element (The rect defining the block)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 5);
+  rect(b.x, b.y, b.w, b.h, 6);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (The wood texture)
+  // REQUIREMENT: Image element (Applied wood texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Visual Polish: Outline for block separation
-  stroke(120, 50, 60, 200);
+  // Visual Polish: Outline
+  stroke(100, 40, 50, 220);
   strokeWeight(1.5);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 5);
+  rect(b.x, b.y, b.w, b.h, 6);
 
   // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(14); // Slightly smaller to ensure "MOMENTUM" has side padding
+  textSize(16); // Larger text for the larger blocks
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
-  // Check if click is inside any block to swap text
+  // Click interaction to change words
   for (let b of blocks) {
     if (
       mouseX > b.x &&

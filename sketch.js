@@ -2,7 +2,6 @@ let bgImg;
 let woodImg;
 let blocks = [];
 
-// Updated to strictly one-word encouraging messages
 let messages = [
   "BREATHE",
   "STAY",
@@ -20,32 +19,31 @@ let messages = [
 
 function preload() {
   bgImg = loadImage("assets/images/lightroom-workplace.png");
-  woodImg = loadImage("assets/images/pink-wood.jpg");
   // Citation: This woodImg was sourced from Adobe Stock (Lara, 2026).
+  woodImg = loadImage("assets/images/pink-wood.jpg");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  // Tower configuration
+  // TOWER DIMENSIONS: Adjusted for "Longer" blocks and better fit
   let towerLayers = 10;
   let blocksPerLayer = 3;
-  let bWidth = 75; // Slightly narrower to ensure fit
-  let bHeight = 240;
+  let bWidth = 90; // INCREASED: Makes front blocks wider
+  let bHeight = 280; // INCREASED: Makes side blocks wider
   let bThickness = 45;
   let gap = 4;
 
-  // CENTERING LOGIC:
-  // Based on your screenshot, we need to push the tower further right.
-  // width * 0.55 should land it right in the center of the white work area.
-  let centerX = width * 0.55;
-  let centerY = height * 0.85;
+  // POSITIONING: "More Up" and Centered in the white box
+  // 0.39 aligns it with the center of the white canvas area in the screenshot
+  let centerX = width * 0.39;
+  let centerY = height * 0.72; // DECREASED: Moves the tower base up
 
   for (let i = 0; i < towerLayers; i++) {
     let layerY = centerY - i * (bThickness + 2);
 
     if (i % 2 === 0) {
-      // Horizontal/Side view
+      // Horizontal/Side view (One long block)
       blocks.push({
         x: centerX - bHeight / 2,
         y: layerY,
@@ -54,7 +52,7 @@ function setup() {
         message: random(messages),
       });
     } else {
-      // Vertical/Front view
+      // Vertical/Front view (Three individual blocks)
       let totalWidth = blocksPerLayer * bWidth + (blocksPerLayer - 1) * gap;
       let startX = centerX - totalWidth / 2;
       for (let j = 0; j < blocksPerLayer; j++) {
@@ -74,7 +72,7 @@ function draw() {
   // REQUIREMENT: Background command
   background(40);
 
-  // REQUIREMENT: Image element
+  // REQUIREMENT: Image element (Background UI)
   image(bgImg, 0, 0, width, height);
 
   for (let b of blocks) {
@@ -86,34 +84,33 @@ function drawBlock(b) {
   push();
   drawingContext.save();
 
-  // REQUIREMENT: Shape element (The rectangle)
+  // REQUIREMENT: Shape element (Rect)
   noFill();
-  rect(b.x, b.y, b.w, b.h, 3);
+  rect(b.x, b.y, b.w, b.h, 4);
   drawingContext.clip();
 
-  // REQUIREMENT: Image element (The texture)
+  // REQUIREMENT: Image element (Texture)
   image(woodImg, b.x, b.y, b.w, b.h);
   drawingContext.restore();
 
-  // Outline for definition
-  stroke(140, 70, 80, 200);
-  strokeWeight(1);
+  // Definition Outline
+  stroke(130, 60, 70, 220);
+  strokeWeight(1.2);
   noFill();
-  rect(b.x, b.y, b.w, b.h, 3);
+  rect(b.x, b.y, b.w, b.h, 4);
 
   // REQUIREMENT: Text element
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  // Adjusted size to 14px to guarantee one-word fit
-  textSize(14);
+  textSize(15); // Clear, one-word sizing
   textFont("Georgia");
   text(b.message, b.x + b.w / 2, b.y + b.h / 2);
   pop();
 }
 
 function mousePressed() {
-  // Clicking a block swaps the one-word message
+  // Interactive message swap on click
   for (let b of blocks) {
     if (
       mouseX > b.x &&
